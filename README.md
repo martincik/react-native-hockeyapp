@@ -27,6 +27,8 @@ Add to your `ios/Podfile`:
 pod "HockeySDK"
 ```
 
+### Add the RNHockeyApp/ folter to your project
+Drag-and-drop from ./node_modules/react-native-hockeyapp/RNHockeyApp folder to your Project > Libraries.
 
 ## Android
 
