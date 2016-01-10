@@ -1,59 +1,26 @@
 #import "RNHockeyApp.h"
 #import "RCTEventDispatcher.h"
 
-@implementation RNHockeyApp
+static BOOL initialized = NO;
+static BOOL autoSend = YES;
+static NSString *token = nil;
 
-- (id)init
-{
-  self = [super init];
-  initialized = NO;
-  autoSend = YES;
-  return self;
-}
+@implementation RNHockeyApp
 
 RCT_EXPORT_MODULE();
 
-@synthesize bridge = _bridge;
-
 RCT_EXPORT_METHOD(configure:(NSString *) apiToken autoSend:(BOOL) autoSendCrashes)
 {
-  if (initialized == NO)
+  if (initialized == NO) {
     autoSend = autoSendCrashes;
     token = apiToken;
     initialized = YES;
+  } else {
+    NSLog(@"Already initialized! \n");
   }
 }
 
-RCT_EXPORT_METHOD(start:(NSString *) token)
-{
-  [self start:token autoSend:YES];
-}
-
-RCT_EXPORT_METHOD(feedback)
-{
-  if (initialized == YES) {
-    [[BITHockeyManager sharedHockeyManager].feedbackManager showFeedbackListView];
-  }
-}
-
-RCT_EXPORT_METHOD(checkForUpdate)
-{
-  if (initialized == YES) {
-    [[BITHockeyManager sharedHockeyManager].updateManager checkForUpdate];
-  }
-}
-
-RCT_EXPORT_METHOD(generateTestCrash)
-{
-  [[BITHockeyManager sharedHockeyManager].crashManager generateTestCrash];
-}
-
-- (dispatch_queue_t)methodQueue
-{
-  return dispatch_get_main_queue();
-}
-
-+ (BOOL)applicationDidFinishLaunching {
+RCT_EXPORT_METHOD(start) {
   if (initialized == YES) {
     [[BITHockeyManager sharedHockeyManager] configureWithIdentifier:token];
     if (autoSend == YES) {
@@ -62,8 +29,32 @@ RCT_EXPORT_METHOD(generateTestCrash)
     [[BITHockeyManager sharedHockeyManager] startManager];
     [[BITHockeyManager sharedHockeyManager].authenticator authenticateInstallation];
   }
+}
 
-  return YES;
+
+RCT_EXPORT_METHOD(feedback)
+{
+  if (initialized == YES) {
+    [[BITHockeyManager sharedHockeyManager].feedbackManager showFeedbackListView];
+  } else {
+    NSLog(@"Not initialized! \n");
+  }
+}
+
+RCT_EXPORT_METHOD(checkForUpdate)
+{
+  if (initialized == YES) {
+    [[BITHockeyManager sharedHockeyManager].updateManager checkForUpdate];
+  } else {
+    NSLog(@"Not initialized! \n");
+  }
+}
+
+RCT_EXPORT_METHOD(generateTestCrash)
+{
+  if (initialized == YES) {
+    [[BITHockeyManager sharedHockeyManager].crashManager generateTestCrash];
+  }
 }
 
 @end

@@ -4,14 +4,7 @@
 #import "RCTBridgeModule.h"
 #import <HockeySDK/HockeySDK.h>
 
-@interface RNHockeyApp : NSObject<RCTBridgeModule> {
-  BOOL initialized;
-  NSString *token;
-  BOOL autoSend;
-}
-
-+ (BOOL)applicationDidFinishLaunching;
-
+@interface RNHockeyApp : NSObject<RCTBridgeModule>
 @end
 
 #endif
