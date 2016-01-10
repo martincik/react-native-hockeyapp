@@ -44,9 +44,13 @@ project(':react-native-hockeyapp').projectDir = new File(rootProject.projectDir,
 
 ```gradle
 ...
+repositories {
+    jcenter()
+    mavenCentral()
+}
 dependencies {
     classpath 'com.android.tools.build:gradle:1.3.1'
-    classpath 'net.hockeyapp.android:HockeySDK:3.0.2' // <--- add this
+    classpath 'net.hockeyapp.android:HockeySDK:3.7.0-rc.1' // <--- add this
 }
 ```
 
@@ -54,7 +58,6 @@ dependencies {
 
 ```gradle
 apply plugin: "com.android.application"
-apply plugin: 'net.hockeyapp.android:HockeySDK' // <--- add this at the TOP
 ...
 dependencies {
     compile fileTree(dir: "libs", include: ["*.jar"])
@@ -66,7 +69,10 @@ dependencies {
 
 * Manifest file
 ```xml
-<activity android:name="net.hockeyapp.android.UpdateActivity" />
+<application ..>
+    <activity android:name="net.hockeyapp.android.UpdateActivity" />
+    <activity android:name="net.hockeyapp.android.FeedbackActivity" />
+</application>
 ```
 
 * Register Module (in MainActivity.java)
@@ -102,7 +108,6 @@ public class MainActivity extends Activity implements DefaultHardwareBackBtnHand
 }
 ```
 
-
 # Usage
 
 From your JS files for both iOS and Android:
@@ -110,8 +115,22 @@ From your JS files for both iOS and Android:
 ```js
 var HockeyApp = require('react-native-hockeyapp');
 
-HockeyApp.configure(HOCKEY_KEY);
-// or turn off auto send crash reports
-HockeyApp.configure(HOCKEY_KEY, false);
+componentWillMount() {
+    HockeyApp.configure(HOCKEY_APP_ID, true);
+}
+
+componentDidMount() {
+    HockeyApp.start();
+    HockeyApp.checkForUpdate();
+}
+```
+
+You have available these methods:
+```js
+HockeyApp.configure(HOCKEY_APP_ID:string, autoSendCrashReports:boolean = true); // Configure the settings
+HockeyApp.start(); // Start the HockeyApp integration
+HockeyApp.checkForUpdate(); // Check if there's new version and if so trigger update
+HockeyApp.feedback(); // Ask user for feedback.
+HockeyApp.generateTestCrash(); // Generate test crash. Only works in no-debug mode.
 ```
 
