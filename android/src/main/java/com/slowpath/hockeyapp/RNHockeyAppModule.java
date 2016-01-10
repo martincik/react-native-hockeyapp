@@ -28,9 +28,10 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
   private Activity _activity;
   private static ReactApplicationContext _context;
   public static boolean _initialized = false;
-  public static String _token = '';
+  public static String _token = null;
+  public static boolean _autoSend = true;
 
-  public RNGoogleAppInvitesModule(ReactApplicationContext _reactContext, Activity activity) {
+  public RNHockeyAppModule(ReactApplicationContext _reactContext, Activity activity) {
     super(_reactContext);
     _context = _reactContext;
     _activity = activity;
@@ -45,22 +46,26 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
   public void configure(String token, Boolean autoSend) {
     if (!_initialized) {
       _token = token;
-      FeedbackManager.register(_activity, token, null);
-      if (autoSend) {
-        CrashManager.register(_activity, token, new CrashManagerListener() {
+      _autoSend = autoSend;
+      _initialized = true;
+    }
+  }
+
+  @ReactMethod
+  public void start() {
+    if (_initialized) {
+      FeedbackManager.register(_activity, _token, null);
+
+      if (_autoSend) {
+        CrashManager.register(_activity, _token, new CrashManagerListener() {
           public boolean shouldAutoUploadCrashes() {
             return true;
           }
         });
       } else {
-        CrashManager.register(_activity, token);
+        CrashManager.register(_activity, _token);
       }
     }
-  }
-
-  @ReactMethod
-  public void configure(String token) {
-    configure(token, true);
   }
 
   @ReactMethod

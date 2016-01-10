@@ -1,4 +1,4 @@
-package com.slowpath.googleappinvites;
+package com.slowpath.hockeyapp;
 
 import android.app.Activity;
 
@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import com.slowpath.googleappinvites.RNGoogleAppInvitesModule;
+import com.slowpath.hockeyapp.RNHockeyAppModule;
 
-public class RNGoogleAppInvitesPackage implements ReactPackage {
+public class RNHockeyAppPackage implements ReactPackage {
   private Activity _activity;
 
-  public RNGoogleAppInvitesPackage(Activity activity) {
+  public RNHockeyAppPackage(Activity activity) {
     super();
     _activity = activity;
   }
@@ -26,7 +26,7 @@ public class RNGoogleAppInvitesPackage implements ReactPackage {
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
 
-    modules.add(new RNGoogleAppInvitesModule(reactContext, _activity));
+    modules.add(new RNHockeyAppModule(reactContext, _activity));
 
     return modules;
   }
