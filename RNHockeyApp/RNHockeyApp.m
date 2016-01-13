@@ -22,12 +22,14 @@ RCT_EXPORT_METHOD(configure:(NSString *) apiToken autoSend:(BOOL) autoSendCrashe
 
 RCT_EXPORT_METHOD(start) {
   if (initialized == YES) {
-    [[BITHockeyManager sharedHockeyManager] configureWithIdentifier:token];
-    if (autoSend == YES) {
-      [[BITHockeyManager sharedHockeyManager].crashManager setCrashManagerStatus:BITCrashManagerStatusAutoSend];
-    }
-    [[BITHockeyManager sharedHockeyManager] startManager];
-    [[BITHockeyManager sharedHockeyManager].authenticator authenticateInstallation];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [[BITHockeyManager sharedHockeyManager] configureWithIdentifier:token];
+      if (autoSend == YES) {
+        [[BITHockeyManager sharedHockeyManager].crashManager setCrashManagerStatus:BITCrashManagerStatusAutoSend];
+      }
+      [[BITHockeyManager sharedHockeyManager] startManager];
+      [[BITHockeyManager sharedHockeyManager].authenticator authenticateInstallation];
+    });
   }
 }
 
