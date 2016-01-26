@@ -27,7 +27,7 @@ Add to your `ios/Podfile`:
 pod "HockeySDK"
 ```
 
-### Add the RNHockeyApp/ folter to your project
+### Add the RNHockeyApp/ folder to your project
 Drag-and-drop from ./node_modules/react-native-hockeyapp/RNHockeyApp folder to your Project > Libraries.
 
 ### Changes to AppDelegate.m
@@ -68,7 +68,7 @@ repositories {
 }
 dependencies {
     classpath 'com.android.tools.build:gradle:1.3.1'
-    classpath 'net.hockeyapp.android:HockeySDK:3.7.0-rc.1' // <--- add this
+    classpath 'net.hockeyapp.android:HockeySDK:3.7.0' // <--- add this
 }
 ```
 
@@ -112,7 +112,7 @@ public class MainActivity extends Activity implements DefaultHardwareBackBtnHand
       .setBundleAssetName("index.android.bundle")
       .setJSMainModuleName("index.android")
       .addPackage(new MainReactPackage())
-      .addPackage(new RNHockeyAppPackage(this)) // <------ add this line to yout MainActivity class
+      .addPackage(new RNHockeyAppPackage(this)) // <------ add this line to your MainActivity class
       .setUseDeveloperSupport(BuildConfig.DEBUG)
       .setInitialLifecycleState(LifecycleState.RESUMED)
       .build();
