@@ -27,8 +27,24 @@ Add to your `ios/Podfile`:
 pod "HockeySDK"
 ```
 
-### Add the RNHockeyApp/ folter to your project
+### Add the RNHockeyApp/ folder to your project
 Drag-and-drop from ./node_modules/react-native-hockeyapp/RNHockeyApp folder to your Project > Libraries.
+
+### Changes to AppDelegate.m
+If you wish to use Device UUID authentication or Web authentication, the following must be added to `ios/AppDelegate.m`
+```objective-c
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+  if( [[BITHockeyManager sharedHockeyManager].authenticator handleOpenURL:url
+                                                        sourceApplication:sourceApplication
+                                                               annotation:annotation]) {
+    return YES;
+  }
+
+  /* Your own custom URL handlers */
+
+  return NO;
+}
+```
 
 ## Android
 
@@ -52,7 +68,7 @@ repositories {
 }
 dependencies {
     classpath 'com.android.tools.build:gradle:1.3.1'
-    classpath 'net.hockeyapp.android:HockeySDK:3.7.0-rc.1' // <--- add this
+    classpath 'net.hockeyapp.android:HockeySDK:3.7.0' // <--- add this
 }
 ```
 
@@ -96,7 +112,7 @@ public class MainActivity extends Activity implements DefaultHardwareBackBtnHand
       .setBundleAssetName("index.android.bundle")
       .setJSMainModuleName("index.android")
       .addPackage(new MainReactPackage())
-      .addPackage(new RNHockeyAppPackage(this)) // <------ add this line to yout MainActivity class
+      .addPackage(new RNHockeyAppPackage(this)) // <------ add this line to your MainActivity class
       .setUseDeveloperSupport(BuildConfig.DEBUG)
       .setInitialLifecycleState(LifecycleState.RESUMED)
       .build();
@@ -129,10 +145,16 @@ componentDidMount() {
 
 You have available these methods:
 ```js
-HockeyApp.configure(HOCKEY_APP_ID:string, autoSendCrashReports:boolean = true); // Configure the settings
+HockeyApp.configure(HockeyAppId:string, autoSendCrashReports:boolean = true, authenticationType:AuthenticationType = AuthenticationType.Anonymous, appSecret: string = ''); // Configure the settings
 HockeyApp.start(); // Start the HockeyApp integration
 HockeyApp.checkForUpdate(); // Check if there's new version and if so trigger update
 HockeyApp.feedback(); // Ask user for feedback.
 HockeyApp.generateTestCrash(); // Generate test crash. Only works in no-debug mode.
 ```
+The following authentication methods are available:
 
+1. AuthenticationType.Anonymous - Anonymous Authentication
+1. AuthenticationType.EmailSecret - HockeyApp email & App Secret
+1. AuthenticationType.EmailPassword - HockeyApp email & password
+1. AuthenticationType.DeviceUUID - HockeyApp registered devie UUID
+1. AuthenticationType.Web - HockeyApp Web Auth (iOS only)

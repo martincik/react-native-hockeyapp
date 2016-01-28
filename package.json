@@ -28,7 +28,8 @@
   },
   "homepage": "https://github.com/slowpath/react-native-hockeyapp",
   "peerDependencies": {
-    "react-native": ">= 0.14"
+    "react-native": ">= 0.14",
+    "invariant": "^2.2.0"
   },
   "license": "MIT"
 }
