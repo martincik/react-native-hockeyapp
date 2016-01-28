@@ -1,6 +1,6 @@
 {
   "name": "react-native-hockeyapp",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "HockeyApp plugin for React Native supporting Android and iOS.",
   "main": "index.js",
   "scripts": {
