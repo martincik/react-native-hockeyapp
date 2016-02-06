@@ -80,7 +80,7 @@ apply plugin: "com.android.application"
 dependencies {
     compile fileTree(dir: "libs", include: ["*.jar"])
     compile "com.android.support:appcompat-v7:23.0.1"
-    compile "com.facebook.react:react-native:0.14.+"
+    compile "com.facebook.react:react-native:0.19.+"
     compile project(":react-native-hockeyapp") // <--- add this
 }
 ```
