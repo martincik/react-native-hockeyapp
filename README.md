@@ -148,4 +148,4 @@ The following authentication methods are available:
 1. AuthenticationType.Web - HockeyApp Web Auth (iOS only)
 
 # Contributions
-@martincik, @berickson1
+@martincik, @berickson1, @rspeyer 
