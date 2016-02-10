@@ -7,11 +7,11 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 
+import net.hockeyapp.android.CrashManager;
+import net.hockeyapp.android.CrashManagerListener;
 import net.hockeyapp.android.FeedbackManager;
 import net.hockeyapp.android.LoginManager;
 import net.hockeyapp.android.UpdateManager;
-import net.hockeyapp.android.CrashManager;
-import net.hockeyapp.android.CrashManagerListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,11 +19,11 @@ import org.json.JSONObject;
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.Runnable;
+import java.lang.RuntimeException;
+import java.lang.Thread;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.lang.RuntimeException;
-import java.lang.Runnable;
-import java.lang.Thread;
 import java.util.Iterator;
 
 public class RNHockeyAppModule extends ReactContextBaseJavaModule {
