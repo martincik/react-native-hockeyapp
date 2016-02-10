@@ -145,7 +145,6 @@ The following authentication methods are available:
 1. AuthenticationType.Anonymous - Anonymous Authentication
 1. AuthenticationType.EmailSecret - HockeyApp email & App Secret
 1. AuthenticationType.EmailPassword - HockeyApp email & password
-1. AuthenticationType.DeviceUUID - HockeyApp registered devie UUID
 1. AuthenticationType.DeviceUUID - HockeyApp registered device UUID
 1. AuthenticationType.Web - HockeyApp Web Auth (iOS only)
 
