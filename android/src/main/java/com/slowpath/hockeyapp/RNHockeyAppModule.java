@@ -1,6 +1,7 @@
 package com.slowpath.hockeyapp;
 
 import android.app.Activity;
+import android.content.Context;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -12,11 +13,18 @@ import net.hockeyapp.android.UpdateManager;
 import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.CrashManagerListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.lang.RuntimeException;
 import java.lang.Runnable;
 import java.lang.Thread;
+import java.util.Iterator;
 
 public class RNHockeyAppModule extends ReactContextBaseJavaModule {
   public static final int RC_HOCKEYAPP_IN = 9200;
@@ -33,8 +41,10 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
   public static boolean _initialized = false;
   public static String _token = null;
   public static boolean _autoSend = true;
+  public static boolean _ignoreDefaultHandler = false;
   public static int _authType = 0;
   public static String _appSecret = null;
+  public static RNHockeyCrashManagerListener _crashManagerListener = null;
 
   public RNHockeyAppModule(ReactApplicationContext _reactContext, Activity activity) {
     super(_reactContext);
@@ -48,12 +58,14 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void configure(String token, Boolean autoSend, int apiAuthType, String secret) {
+  public void configure(String token, Boolean autoSend, int apiAuthType, String secret, Boolean ignoreDefaultHandler) {
     if (!_initialized) {
       _token = token;
       _autoSend = autoSend;
       _authType = apiAuthType;
       _appSecret = secret;
+      _ignoreDefaultHandler = ignoreDefaultHandler;
+      _crashManagerListener = new RNHockeyCrashManagerListener(_context, _autoSend, _ignoreDefaultHandler);
       _initialized = true;
     }
   }
@@ -63,15 +75,7 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
     if (_initialized) {
       FeedbackManager.register(_activity, _token, null);
 
-      if (_autoSend) {
-        CrashManager.register(_activity, _token, new CrashManagerListener() {
-          public boolean shouldAutoUploadCrashes() {
-            return true;
-          }
-        });
-      } else {
-        CrashManager.register(_activity, _token);
-      }
+      CrashManager.register(_activity, _token, _crashManagerListener);
 
       int authenticationMode;
       switch (_authType) {
@@ -99,6 +103,8 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
 
       LoginManager.register(_context, _token, _appSecret, authenticationMode, (Class<?>) null);
       LoginManager.verifyLogin(_activity, _activity.getIntent());
+
+      _crashManagerListener.deleteMetadataFileIfExists();
     }
   }
 
@@ -129,6 +135,13 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void addMetadata(String metadata) {
+    if (_initialized) {
+      _crashManagerListener.addMetadata(metadata);
+    }
+  }
+
+  @ReactMethod
   public void generateCrashReport() {
     if (_initialized) {
       new Thread(new Runnable() {
@@ -141,4 +154,86 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
     }
   }
 
+  private static class RNHockeyCrashManagerListener extends CrashManagerListener {
+    private boolean autoSend = false;
+    private boolean ignoreDefaultHandler = false;
+    private Context context = null;
+
+    private static final String FILE_NAME = "HockeyAppCrashMetadata.json";
+
+    public RNHockeyCrashManagerListener(Context context, boolean autoSend, boolean ignoreDefaultHandler) {
+      this.context = context;
+      this.autoSend = autoSend;
+      this.ignoreDefaultHandler = ignoreDefaultHandler;
+    }
+
+    @Override
+    public boolean ignoreDefaultHandler() {
+      return this.ignoreDefaultHandler;
+    }
+
+    @Override
+    public boolean shouldAutoUploadCrashes() {
+      return this.autoSend;
+    }
+
+    @Override
+    public String getDescription() {
+      JSONObject metadata = this.getExistingMetadata();
+
+      if (metadata == null) {
+        return null;
+      }
+
+      return metadata.toString();
+    }
+
+    public void addMetadata(String metadata) {
+      try {
+        JSONObject newMetadata = new JSONObject(metadata);
+        JSONObject allMetadata = this.getExistingMetadata();
+
+        if (allMetadata == null) {
+          allMetadata = new JSONObject();
+        }
+
+        // Merge new metadata into existing metadata, overwriting existing keys if necessary.
+        for (Iterator<String> keys = newMetadata.keys(); keys.hasNext(); ) {
+          String key = keys.next();
+
+          allMetadata.put(key, newMetadata.get(key));
+        }
+
+        FileOutputStream stream = this.context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
+
+        stream.write(allMetadata.toString().getBytes("UTF8"));
+        stream.close();
+      } catch (IOException e) {
+      } catch (JSONException e) {
+      }
+    }
+
+    public void deleteMetadataFileIfExists() {
+      _context.deleteFile(FILE_NAME);
+    }
+
+    private JSONObject getExistingMetadata() {
+      try {
+        BufferedInputStream stream = new BufferedInputStream(this.context.openFileInput(FILE_NAME));
+
+        int bytesRequired = stream.available();
+        byte[] buffer = new byte[bytesRequired];
+
+        stream.read(buffer);
+        stream.close();
+        String json = new String(buffer, "UTF8");
+
+        return new JSONObject(json);
+      } catch (IOException e) {
+      } catch (JSONException e) {
+      }
+
+      return null;
+    }
+  }
 }

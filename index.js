@@ -17,9 +17,9 @@ module.exports = {
         DeviceUUID: 3,
         Web: 4
     },
-    configure(apiToken, autoSendCrashes, authenticationType, apiSecret) {
+    configure(apiToken, autoSendCrashes, authenticationType, apiSecret, ignoreDefaultHandler) {
         checkInstalled();
-        RNHockeyApp.configure(apiToken, autoSendCrashes || true, authenticationType || 0, apiSecret || '');
+        RNHockeyApp.configure(apiToken, autoSendCrashes || true, authenticationType || 0, apiSecret || '', ignoreDefaultHandler || false);
     },
     start(){
         checkInstalled();
@@ -32,6 +32,11 @@ module.exports = {
     feedback(){
         checkInstalled();
         RNHockeyApp.feedback();
+    },
+    addMetadata(metadata){
+        checkInstalled();
+        var json = JSON.stringify(metadata);
+        RNHockeyApp.addMetadata(json);
     },
     generateTestCrash(){
         checkInstalled();
