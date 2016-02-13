@@ -133,10 +133,11 @@ componentDidMount() {
 
 You have available these methods:
 ```js
-HockeyApp.configure(HockeyAppId:string, autoSendCrashReports:boolean = true, authenticationType:AuthenticationType = AuthenticationType.Anonymous, appSecret: string = ''); // Configure the settings
+HockeyApp.configure(HockeyAppId: string, autoSendCrashReports: boolean = true, authenticationType: AuthenticationType = AuthenticationType.Anonymous, appSecret: string = '', ignoreDefaultHandler: string = false); // Configure the settings
 HockeyApp.start(); // Start the HockeyApp integration
 HockeyApp.checkForUpdate(); // Check if there's new version and if so trigger update
 HockeyApp.feedback(); // Ask user for feedback.
+HockeyApp.addMetadata(metadata: object); // Add metadata to crash report.  The argument must be an object with key-value pairs.
 HockeyApp.generateTestCrash(); // Generate test crash. Only works in no-debug mode.
 ```
 The following authentication methods are available:
@@ -144,8 +145,8 @@ The following authentication methods are available:
 1. AuthenticationType.Anonymous - Anonymous Authentication
 1. AuthenticationType.EmailSecret - HockeyApp email & App Secret
 1. AuthenticationType.EmailPassword - HockeyApp email & password
-1. AuthenticationType.DeviceUUID - HockeyApp registered devie UUID
+1. AuthenticationType.DeviceUUID - HockeyApp registered device UUID
 1. AuthenticationType.Web - HockeyApp Web Auth (iOS only)
 
 # Contributions
-@martincik, @berickson1, @rspeyer 
+@martincik, @berickson1, @rspeyer, @dtivel
