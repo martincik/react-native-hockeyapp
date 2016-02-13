@@ -2,17 +2,15 @@ package com.slowpath.hockeyapp;
 
 import android.app.Activity;
 
-import com.facebook.react.ReactPackage;
+import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.ReactPackage;
 import com.facebook.react.uimanager.ViewManager;
-import com.facebook.react.bridge.JavaScriptModule;
 
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
-
-import com.slowpath.hockeyapp.RNHockeyAppModule;
+import java.util.List;
 
 public class RNHockeyAppPackage implements ReactPackage {
   private Activity _activity;
@@ -20,6 +18,8 @@ public class RNHockeyAppPackage implements ReactPackage {
   public RNHockeyAppPackage(Activity activity) {
     super();
     _activity = activity;
+
+    RNHockeyAppUsageTracker.initialize(activity.getApplication());
   }
 
   @Override
