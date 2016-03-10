@@ -27,8 +27,13 @@ Add to your `ios/Podfile`:
 pod "HockeySDK"
 ```
 
+Run `pod install`
+
+### Add Pods.xcodeproj to your project
+Drag-and-drop ./ios/Pods/Pods.xcodeproj into your Project > Libraries.
+
 ### Add the RNHockeyApp/ folder to your project
-Drag-and-drop from ./node_modules/react-native-hockeyapp/RNHockeyApp folder to your Project > Libraries.
+Drag-and-drop files from ./node_modules/react-native-hockeyapp/RNHockeyApp into your Project > Libraries.
 
 ### Changes to AppDelegate.m
 If you wish to use Device UUID authentication or Web authentication, the following must be added to `ios/AppDelegate.m`
