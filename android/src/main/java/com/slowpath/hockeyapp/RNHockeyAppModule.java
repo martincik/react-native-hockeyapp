@@ -142,7 +142,7 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void generateCrashReport() {
+  public void generateTestCrash() {
     if (_initialized) {
       new Thread(new Runnable() {
         public void run() {
