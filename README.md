@@ -24,7 +24,14 @@ CocoaPods ([Setup](https://guides.cocoapods.org/using/getting-started.html#insta
 
 Add to your `ios/Podfile`:
 ```ruby
-pod "HockeySDK"
+pod 'React', :path => '../node_modules/react-native', :subspecs => [
+  'Core',
+  'RCTImage',
+  'RCTNetwork',
+  'RCTText',
+  'RCTWebSocket'
+]
+pod 'RNHockeyApp', :path => '../node_modules/react-native-hockeyapp'
 ```
 
 Run `pod install`
@@ -32,8 +39,9 @@ Run `pod install`
 ### Add Pods.xcodeproj to your project
 Drag-and-drop ./ios/Pods/Pods.xcodeproj into your Project > Libraries.
 
-### Add the RNHockeyApp/ folder to your project
-Drag-and-drop files from ./node_modules/react-native-hockeyapp/RNHockeyApp into your Project > Libraries.
+### Add $(inherited) flag to your Build Settings
+Under your app target -> Build Settings, look for Other Linker Flags and add `$(inherited)`.
+![Build Settings](https://cloud.githubusercontent.com/assets/8598682/14924166/f595db8a-0df5-11e6-84b2-1d51aebdd678.png)
 
 ### Changes to AppDelegate.m
 If you wish to use Device UUID authentication or Web authentication, the following must be added to `ios/AppDelegate.m`
@@ -67,13 +75,12 @@ project(':react-native-hockeyapp').projectDir = new File(rootProject.projectDir,
 
 ```gradle
 ...
-repositories {
-    jcenter()
-    mavenCentral()
-}
-dependencies {
-    classpath 'com.android.tools.build:gradle:1.3.1'
-    classpath 'net.hockeyapp.android:HockeySDK:3.7.0' // <--- add this
+allprojects {
+    repositories {
+        ...
+        // add this line below
+        flatDir { dirs "$projectDir/../../node_modules/react-native-hockeyapp/android/HockeySDK-Android/libs" }
+    }
 }
 ```
 
