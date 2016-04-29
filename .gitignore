@@ -22,6 +22,9 @@ DerivedData
 *.xcuserstate
 project.xcworkspace
 
+#AppCode exclusions
+ios/.idea
+
 # node.js
 #
 node_modules/
