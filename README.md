@@ -38,7 +38,8 @@ workspace 'YOUR_WORKSPACE_NAME.xcworkspace'
 
 target 'RNHockeyApp' do
   xcodeproj '../node_modules/react-native-hockeyapp/ios/RNHockeyApp.xcodeproj'
-  pod 'HockeySDK', '3.7.3'
+  pod 'HockeySDK'
+  pod 'React', :path => '../node_modules/react-native'
 end
 ```
 
