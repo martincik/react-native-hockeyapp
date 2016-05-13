@@ -101,7 +101,7 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
         }
       }
 
-      LoginManager.register(_context, _token, _appSecret, authenticationMode, (Class<?>) null);
+      LoginManager.register(_context, _token, _appSecret, authenticationMode, _activity.getClass());
       LoginManager.verifyLogin(_activity, _activity.getIntent());
 
       _crashManagerListener.deleteMetadataFileIfExists();
