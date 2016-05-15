@@ -41,6 +41,9 @@ module.exports = {
     generateTestCrash(){
         checkInstalled();
         RNHockeyApp.generateTestCrash();
+    },
+    trackEvent(eventName){
+        checkInstalled();
+        RNHockeyApp.trackEvent(eventName);
     }
 }
-

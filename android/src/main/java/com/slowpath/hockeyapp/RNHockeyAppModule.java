@@ -2,6 +2,7 @@ package com.slowpath.hockeyapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -12,6 +13,7 @@ import net.hockeyapp.android.CrashManagerListener;
 import net.hockeyapp.android.FeedbackManager;
 import net.hockeyapp.android.LoginManager;
 import net.hockeyapp.android.UpdateManager;
+import net.hockeyapp.android.metrics.MetricsManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -76,6 +78,7 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
       FeedbackManager.register(_activity, _token, null);
 
       CrashManager.register(_activity, _token, _crashManagerListener);
+      MetricsManager.register(_activity, _activity.getApplication(), _token);
 
       int authenticationMode;
       switch (_authType) {
@@ -152,6 +155,19 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
         }
       }).start();
     }
+  }
+
+  @ReactMethod
+  public void trackEvent(String eventName) {
+    if (eventName == null || eventName.isEmpty()) {
+      log("An event name must be provided.");
+    } else {
+      MetricsManager.trackEvent(eventName);
+    }
+  }
+
+  private void log(String message) {
+    Log.d("ReactNativeJS", "react-native-hockeyapp: " + message);
   }
 
   private static class RNHockeyCrashManagerListener extends CrashManagerListener {

@@ -14,7 +14,7 @@ static NSString *appSecret = nil;
 
 RCT_EXPORT_MODULE();
 
-RCT_EXPORT_METHOD(configure:(NSString *) apiToken autoSend:(BOOL) autoSendCrashes authType:(NSInteger) apiAuthType appSecret:(NSString*) apiAppSecret ignoreDefaultHandler:(BOOL) ignoreDefaultCrashHandler)
+RCT_EXPORT_METHOD(configure:(NSString *)apiToken autoSend:(BOOL) autoSendCrashes authType:(NSInteger) apiAuthType appSecret:(NSString *)apiAppSecret ignoreDefaultHandler:(BOOL) ignoreDefaultCrashHandler)
 {
     if (initialized == NO) {
         autoSend = autoSendCrashes;
@@ -67,7 +67,7 @@ RCT_EXPORT_METHOD(start) {
     }
 }
 
-RCT_EXPORT_METHOD(addMetadata:(NSData*) metadata)
+RCT_EXPORT_METHOD(addMetadata:(NSData *)metadata)
 {
     if (initialized == YES) {
         NSDictionary *newMetadata = [NSJSONSerialization JSONObjectWithData:metadata options:0 error:nil];
@@ -112,6 +112,18 @@ RCT_EXPORT_METHOD(generateTestCrash)
 {
     if (initialized == YES) {
         [[BITHockeyManager sharedHockeyManager].crashManager generateTestCrash];
+    }
+}
+
+RCT_EXPORT_METHOD(trackEvent:(NSString *)eventName)
+{
+    if (initialized == YES) {
+        if ([eventName length] > 0) {
+            BITMetricsManager *metricsManager = [[BITHockeyManager sharedHockeyManager] metricsManager];
+            [metricsManager trackEventWithName:eventName];
+        } else {
+            NSLog(@"react-native-hockeyapp: An event name must be provided.");
+        }
     }
 }
 
