@@ -7,13 +7,11 @@
 - Android
 - React Native >0.14
 - CocoaPods
-- rnpm (https://github.com/rnpm/rnpm)
 
 ## Installation
 
 ```bash
 npm install react-native-hockeyapp --save
-rnpm link
 ```
 
 ## iOS
@@ -24,23 +22,9 @@ CocoaPods ([Setup](https://guides.cocoapods.org/using/getting-started.html#insta
 
 ### Podfile
 
-Add a few sections to your `ios/Podfile`:
-
-1) Add the HockeySDK to the targets for you application:
+Add to your `ios/Podfile`:
 ```ruby
 pod "HockeySDK"
-```
-
-2) Add the following lines to the top replacing "YOUR_WORKSPACE_NAME" with the name of your application's project:
-```ruby
-workspace 'YOUR_WORKSPACE_NAME.xcworkspace'
-
-
-target 'RNHockeyApp' do
-  xcodeproj '../node_modules/react-native-hockeyapp/ios/RNHockeyApp.xcodeproj'
-  pod 'HockeySDK'
-  pod 'React', :path => '../node_modules/react-native'
-end
 ```
 
 Run `pod install`
