@@ -35,22 +35,8 @@ Drag-and-drop ./ios/Pods/Pods.xcodeproj into your Project > Libraries.
 ### Add the RNHockeyApp/ folder to your project
 Drag-and-drop files from ./node_modules/react-native-hockeyapp/RNHockeyApp into your Project > Libraries.
 
-### Link Framework
-Select your project "Target", go under "Build Phases", then search for the section "Link Binary With Libraries".
-Click the +, then "Add Other...". Navigate through Pods/HockeySDK/HockeySDK-iOS/HockeySDK.embeddedframework, and select "HockeySDK.framework".
-Click "Open".
-
-<img src="assets/link-framework-to-build-phase.png" width="250">
-
 ### Changes to AppDelegate.m
 If you wish to use Device UUID authentication or Web authentication, the following must be added to `ios/AppDelegate.m`
-
-Add at the top:
-```objective-c
-#import "RNHockeyApp.h"
-```
-
-Add right before "@end"
 ```objective-c
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
   if( [[BITHockeyManager sharedHockeyManager].authenticator handleOpenURL:url
