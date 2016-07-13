@@ -5,7 +5,7 @@
 
 - iOS 7+
 - Android
-- React Native >0.14
+- React Native >0.17
 - CocoaPods
 
 ## Installation
@@ -51,7 +51,7 @@ If you wish to use Device UUID authentication or Web authentication, the followi
 }
 ```
 
-## Android
+## Android (React Native >= 0.29)
 
 ### Google project configuration
 
@@ -85,7 +85,75 @@ apply plugin: "com.android.application"
 dependencies {
     compile fileTree(dir: "libs", include: ["*.jar"])
     compile "com.android.support:appcompat-v7:23.0.1"
-    compile "com.facebook.react:react-native:0.19.+"
+    compile "com.facebook.react:react-native:0.29.+"
+    compile project(":react-native-hockeyapp") // <--- add this
+}
+```
+
+* Manifest file
+```xml
+<application ..>
+    <activity android:name="net.hockeyapp.android.UpdateActivity" />
+    <activity android:name="net.hockeyapp.android.FeedbackActivity" />
+</application>
+```
+
+* Register Module (in MainApplication.java)
+
+```java
+import com.slowpath.hockeyapp.RNHockeyAppModule; // <--- import
+import com.slowpath.hockeyapp.RNHockeyAppPackage;  // <--- import
+
+public class MainApplication extends Application implements ReactApplication {
+  ......
+
+  @Override
+  protected List<ReactPackage> getPackages() {
+    return Arrays.<ReactPackage>asList(
+      new RNHockeyAppPackage(MainApplication.this), // <------ add this line to yout MainApplication class
+      new MainReactPackage());
+  }
+
+  ......
+
+}
+```
+
+## Android (React Native 0.17 - 0.28)
+
+### Google project configuration
+
+* In `android/setting.gradle`
+
+```gradle
+...
+include ':react-native-hockeyapp', ':app'
+project(':react-native-hockeyapp').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-hockeyapp/android')
+```
+
+* In `android/build.gradle`
+
+```gradle
+...
+repositories {
+    jcenter()
+    mavenCentral()
+}
+dependencies {
+    classpath 'com.android.tools.build:gradle:1.3.1'
+    classpath 'net.hockeyapp.android:HockeySDK:3.7.0' // <--- add this
+}
+```
+
+* In `android/app/build.gradle`
+
+```gradle
+apply plugin: "com.android.application"
+...
+dependencies {
+    compile fileTree(dir: "libs", include: ["*.jar"])
+    compile "com.android.support:appcompat-v7:23.0.1"
+    compile "com.facebook.react:react-native:0.17.+"
     compile project(":react-native-hockeyapp") // <--- add this
 }
 ```
