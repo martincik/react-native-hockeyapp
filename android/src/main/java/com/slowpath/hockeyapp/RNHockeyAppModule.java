@@ -36,7 +36,6 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
   public static final int AUTHENTICATION_TYPE_DEVICE_UUID = 3;
   public static final int AUTHENTICATION_TYPE_WEB = 4; // Included for consistency, but not supported on Android currently
 
-  private Activity _activity;
   private static ReactApplicationContext _context;
   public static boolean _initialized = false;
   public static String _token = null;
@@ -46,10 +45,9 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
   public static String _appSecret = null;
   public static RNHockeyCrashManagerListener _crashManagerListener = null;
 
-  public RNHockeyAppModule(ReactApplicationContext _reactContext, Activity activity) {
+  public RNHockeyAppModule(ReactApplicationContext _reactContext) {
     super(_reactContext);
     _context = _reactContext;
-    _activity = activity;
   }
 
   @Override
@@ -72,10 +70,13 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void start() {
-    if (_initialized) {
-      FeedbackManager.register(_activity, _token, null);
 
-      CrashManager.register(_activity, _token, _crashManagerListener);
+    Activity currentActivity = getCurrentActivity();
+
+    if (_initialized) {
+      FeedbackManager.register(currentActivity, _token, null);
+
+      CrashManager.register(currentActivity, _token, _crashManagerListener);
 
       int authenticationMode;
       switch (_authType) {
@@ -101,8 +102,8 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
         }
       }
 
-      LoginManager.register(_context, _token, _appSecret, authenticationMode, _activity.getClass());
-      LoginManager.verifyLogin(_activity, _activity.getIntent());
+      LoginManager.register(_context, _token, _appSecret, authenticationMode, currentActivity.getClass());
+      LoginManager.verifyLogin(currentActivity, currentActivity.getIntent());
 
       _crashManagerListener.deleteMetadataFileIfExists();
     }
@@ -110,27 +111,29 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void checkForUpdate() {
+    Activity currentActivity = getCurrentActivity();
     if (_initialized) {
-      UpdateManager.register(_activity, _token);
+      UpdateManager.register(currentActivity, _token);
     }
   }
 
   @ReactMethod
   public void feedback() {
+    Activity currentActivity = getCurrentActivity();
     if (_initialized) {
-      _activity.runOnUiThread(new Runnable() {
-        private Activity _activity;
+      currentActivity.runOnUiThread(new Runnable() {
+        private Activity currentActivity;
 
         public Runnable init(Activity activity) {
-          _activity = activity;
+          currentActivity = activity;
           return (this);
         }
 
         @Override
         public void run() {
-          FeedbackManager.showFeedbackActivity(_activity);
+          FeedbackManager.showFeedbackActivity(currentActivity);
         }
-      }.init(_activity));
+      }.init(currentActivity));
     }
   }
 
