@@ -72,7 +72,11 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
   public void start() {
 
     Activity currentActivity = getCurrentActivity();
-
+    if (currentActivity == null) {
+        // The currentActivity can be null if it is backgrounded / destroyed, so we simply
+        // no-op to prevent any null pointer exceptions.
+        return;
+    }
     if (_initialized) {
       FeedbackManager.register(currentActivity, _token, null);
 
@@ -112,6 +116,11 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void checkForUpdate() {
     Activity currentActivity = getCurrentActivity();
+    if (currentActivity == null) {
+        // The currentActivity can be null if it is backgrounded / destroyed, so we simply
+        // no-op to prevent any null pointer exceptions.
+        return;
+    }
     if (_initialized) {
       UpdateManager.register(currentActivity, _token);
     }
@@ -120,6 +129,11 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void feedback() {
     Activity currentActivity = getCurrentActivity();
+    if (currentActivity == null) {
+        // The currentActivity can be null if it is backgrounded / destroyed, so we simply
+        // no-op to prevent any null pointer exceptions.
+        return;
+    }
     if (_initialized) {
       currentActivity.runOnUiThread(new Runnable() {
         private Activity currentActivity;
