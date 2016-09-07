@@ -73,7 +73,7 @@ repositories {
 }
 dependencies {
     classpath 'com.android.tools.build:gradle:1.3.1'
-    classpath 'net.hockeyapp.android:HockeySDK:3.7.0' // <--- add this
+    classpath 'net.hockeyapp.android:HockeySDK:4.1.0' // <--- add this
 }
 ```
 
@@ -119,7 +119,7 @@ public class MainApplication extends Application implements ReactApplication {
 }
 ```
 
-## Android (React Native 0.17 - 0.28)
+## Android (React Native 0.17 - 0.28) - Only react-native-hockeyapp:0.4.2 or less
 
 ### Google project configuration
 
@@ -141,7 +141,7 @@ repositories {
 }
 dependencies {
     classpath 'com.android.tools.build:gradle:1.3.1'
-    classpath 'net.hockeyapp.android:HockeySDK:3.7.0' // <--- add this
+    classpath 'net.hockeyapp.android:HockeySDK:4.1.0' // <--- add this
 }
 ```
 
@@ -200,7 +200,7 @@ componentWillMount() {
 
 componentDidMount() {
     HockeyApp.start();
-    HockeyApp.checkForUpdate();
+    HockeyApp.checkForUpdate(); // optional
 }
 ```
 
