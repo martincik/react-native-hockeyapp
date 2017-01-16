@@ -1,5 +1,5 @@
 #import "RNHockeyApp.h"
-#import "RCTEventDispatcher.h"
+#import <React/RCTEventDispatcher.h>
 
 static BOOL initialized = NO;
 static BOOL autoSend = YES;
