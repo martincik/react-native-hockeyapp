@@ -1,11 +1,11 @@
 var {
-  NativeModules: {
-    RNHockeyApp
-  }
+    NativeModules: {
+        RNHockeyApp
+    }
 } = require('react-native');
 var invariant = require('invariant');
 
-function checkInstalled(){
+function checkInstalled() {
     invariant(RNHockeyApp, 'react-native-hockeyapp platform setup not complete');
 }
 
@@ -21,26 +21,30 @@ module.exports = {
         checkInstalled();
         RNHockeyApp.configure(apiToken, autoSendCrashes || true, authenticationType || 0, apiSecret || '', ignoreDefaultHandler || false);
     },
-    start(){
+    start() {
         checkInstalled();
         RNHockeyApp.start();
     },
-    checkForUpdate(){
+    checkForUpdate() {
         checkInstalled();
         RNHockeyApp.checkForUpdate();
     },
-    feedback(){
+    feedback() {
         checkInstalled();
         RNHockeyApp.feedback();
     },
-    addMetadata(metadata){
+    addMetadata(metadata) {
         checkInstalled();
         var json = JSON.stringify(metadata);
         RNHockeyApp.addMetadata(json);
     },
-    generateTestCrash(){
+    generateTestCrash() {
         checkInstalled();
         RNHockeyApp.generateTestCrash();
+    },
+    trackEvent(eventName) {
+        checkInstalled();
+        RNHockeyApp.trackEvent(eventName);
     }
 }
 
