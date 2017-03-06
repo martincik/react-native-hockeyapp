@@ -119,6 +119,18 @@ RCT_EXPORT_METHOD(generateTestCrash)
     }
 }
 
+RCT_EXPORT_METHOD(trackEvent:(NSString *)eventName)
+{
+    if (initialized == YES) {
+        if ([eventName length] > 0) {
+            BITMetricsManager *metricsManager = [[BITHockeyManager sharedHockeyManager] metricsManager];
+            [metricsManager trackEventWithName:eventName];
+        } else {
+            NSLog(@"react-native-hockeyapp: An event name must be provided.");
+        }
+    }
+}
+
 + (void)deleteMetadataFileIfExists
 {
     NSString *filePath = [RNHockeyApp getMetadataFilePath];
