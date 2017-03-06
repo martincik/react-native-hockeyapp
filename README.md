@@ -141,7 +141,7 @@ repositories {
 }
 dependencies {
     classpath 'com.android.tools.build:gradle:1.3.1'
-    classpath 'net.hockeyapp.android:HockeySDK:4.1.0' // <--- add this
+    classpath 'net.hockeyapp.android:HockeySDK:4.1.2' // <--- add this
 }
 ```
 

@@ -18,7 +18,7 @@ public class RNHockeyAppPackage implements ReactPackage {
 
   public RNHockeyAppPackage(Application application) {
     super();
-    
+
     RNHockeyAppUsageTracker.initialize(application);
   }
 
