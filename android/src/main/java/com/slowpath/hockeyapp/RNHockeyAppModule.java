@@ -17,8 +17,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
-import java.io.FileOutputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.Runnable;
 import java.lang.RuntimeException;
 import java.lang.Thread;
@@ -28,6 +30,7 @@ import java.util.Iterator;
 
 public class RNHockeyAppModule extends ReactContextBaseJavaModule {
   public static final int RC_HOCKEYAPP_IN = 9200;
+  private static final int DEFAULT_BUFFER_SIZE = 8192;
 
   // This wants to be an enum, but cannot translate that to match the JS API properly
   public static final int AUTHENTICATION_TYPE_ANONYMOUS = 0;
@@ -206,6 +209,7 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
     }
 
     public void addMetadata(String metadata) {
+      OutputStream stream = null;
       try {
         JSONObject newMetadata = new JSONObject(metadata);
         JSONObject allMetadata = this.getExistingMetadata();
@@ -221,12 +225,18 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
           allMetadata.put(key, newMetadata.get(key));
         }
 
-        FileOutputStream stream = this.context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
+        stream = this.context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
+        stream = new BufferedOutputStream(stream, DEFAULT_BUFFER_SIZE);
 
         stream.write(allMetadata.toString().getBytes("UTF8"));
-        stream.close();
-      } catch (IOException e) {
-      } catch (JSONException e) {
+
+      } catch (IOException|JSONException e) {
+      } finally {
+        try {
+          stream.close();
+        } catch (IOException e) {
+          // NO OP
+        }
       }
     }
 
@@ -235,19 +245,29 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
     }
 
     private JSONObject getExistingMetadata() {
+      InputStream stream = null;
       try {
-        BufferedInputStream stream = new BufferedInputStream(this.context.openFileInput(FILE_NAME));
+        stream = new BufferedInputStream(this.context.openFileInput(FILE_NAME), DEFAULT_BUFFER_SIZE);
+        StringBuilder builder = new StringBuilder(DEFAULT_BUFFER_SIZE);
 
-        int bytesRequired = stream.available();
-        byte[] buffer = new byte[bytesRequired];
+        byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+        int bytesRead;
+        do {
+          bytesRead = stream.read(buffer);
+          if (bytesRead > 0) {
+            builder.append(new String(buffer, 0, bytesRead, "UTF8"));
+          }
+        } while(bytesRead > 0);
 
-        stream.read(buffer);
-        stream.close();
-        String json = new String(buffer, "UTF8");
-
-        return new JSONObject(json);
-      } catch (IOException e) {
-      } catch (JSONException e) {
+        return new JSONObject(builder.toString());
+      } catch (IOException|JSONException e) {
+        if (stream != null) {
+          try {
+            stream.close();
+          } catch (IOException er) {
+            // NO OP
+          }
+        }
       }
 
       return null;
