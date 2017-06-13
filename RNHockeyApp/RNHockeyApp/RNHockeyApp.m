@@ -1,8 +1,13 @@
 #import "RNHockeyApp.h"
+
 #if __has_include(<React/RCTEventDispatcher.h>)
+
 #import <React/RCTEventDispatcher.h>
+
 #else
+
 #import "RCTEventDispatcher.h"
+
 #endif
 
 static BOOL initialized = NO;
