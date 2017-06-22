@@ -32,7 +32,7 @@ Run `pod install`
 ### Add Pods.xcodeproj to your project
 Drag-and-drop ./ios/Pods/Pods.xcodeproj into your Project > Libraries.
 
-### Add the RNHockeyApp/ folder to your project
+### Add files from RNHockeyApp/ folder to your project
 Drag-and-drop files from ./node_modules/react-native-hockeyapp/RNHockeyApp into your Project > Libraries.
 
 ### Changes to AppDelegate.m
