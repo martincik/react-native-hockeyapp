@@ -15,7 +15,7 @@ export const AuthenticationType = {
     EmailPassword: 2,
     DeviceUUID: 3,
     Web: 4
-}
+};
 
 export const HockeyApp = {
     AuthenticationType: {
