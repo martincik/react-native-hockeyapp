@@ -9,7 +9,15 @@ function checkInstalled() {
     invariant(RNHockeyApp, 'react-native-hockeyapp platform setup not complete');
 }
 
-module.exports = {
+export const AuthenticationType = {
+    Anonymous: 0,
+    EmailSecret: 1,
+    EmailPassword: 2,
+    DeviceUUID: 3,
+    Web: 4
+}
+
+export const HockeyApp = {
     AuthenticationType: {
         Anonymous: 0,
         EmailSecret: 1,
@@ -48,3 +56,4 @@ module.exports = {
     }
 }
 
+export default HockeyApp;
