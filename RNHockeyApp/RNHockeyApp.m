@@ -94,6 +94,7 @@ RCT_EXPORT_METHOD(addMetadata:(NSData*) metadata)
     }
 }
 
+#if HOCKEYSDK_FEATURE_FEEDBACK
 RCT_EXPORT_METHOD(feedback)
 {
     if (initialized == YES) {
@@ -102,6 +103,12 @@ RCT_EXPORT_METHOD(feedback)
         NSLog(@"Not initialized! \n");
     }
 }
+#else
+RCT_EXPORT_METHOD(feedback)
+{
+    NSLog(@"Feedback not included in HockeyApp SDK installation! \n");
+}
+#endif
 
 RCT_EXPORT_METHOD(checkForUpdate)
 {
