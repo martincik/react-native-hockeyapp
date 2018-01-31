@@ -29,6 +29,7 @@ import java.lang.Thread;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Iterator;
+import java.util.Map;
 
 public class RNHockeyAppModule extends ReactContextBaseJavaModule {
   public static final int RC_HOCKEYAPP_IN = 9200;
@@ -183,6 +184,15 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
     {
       log(eventName);
        MetricsManager.trackEvent(eventName);
+    }
+  }
+
+   @ReactMethod
+  public void trackEventWithOptionsAndMeasurements(String eventName, Map<String,String> properties, Map<String,Double> measurements) {
+    if(_initialized)
+    {
+      log(eventName);
+       MetricsManager.trackEvent(eventName, properties, measurements));
     }
   }
 

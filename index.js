@@ -45,6 +45,10 @@ module.exports = {
     trackEvent(eventName) {
         checkInstalled();
         RNHockeyApp.trackEvent(eventName);
+    },
+    trackEventWithOptionsAndMeasurements(eventName, options, measurements) {
+        checkInstalled();
+        RNHockeyApp.trackEventWithOptionsAndMeasurements(eventName, options || {}, measurements || {});
     }
 }
 
