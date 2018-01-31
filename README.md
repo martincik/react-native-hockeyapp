@@ -1,3 +1,5 @@
+:exclamation: *While I do not have the time to actively maintain RN-hockeyapp anymore, I am open to new maintainers taking the lead. If you would be interested, contact me at ladislav (at) benloop (dot) com.* :exclamation:
+
 # react-native-hockeyapp
 [HockeyApp](http://hockeyapp.com) integration for React Native.
 
