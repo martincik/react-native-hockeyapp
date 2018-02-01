@@ -192,7 +192,7 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
     if(_initialized)
     {
       log(eventName);
-       MetricsManager.trackEvent(eventName, properties, measurements));
+       MetricsManager.trackEvent(eventName, properties, measurements);
     }
   }
 
