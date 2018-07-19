@@ -41,6 +41,8 @@ Open `YourProject.xcworkspace`
 ### Changes to AppDelegate.m
 If you wish to use Device UUID authentication or Web authentication, the following must be added to `ios/AppDelegate.m`
 ```objective-c
+#import "RNHockeyApp.h"
+
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
   if( [[BITHockeyManager sharedHockeyManager].authenticator handleOpenURL:url
                                                         sourceApplication:sourceApplication
@@ -52,6 +54,11 @@ If you wish to use Device UUID authentication or Web authentication, the followi
 
   return NO;
 }
+```
+You also need to add `RNHockeyApp` to `Build Settings > Search Paths > Header Search Paths` as a **`recursive`** search path, adding the following to both `Debug` and `Release` and ensuring `recursive` is selected (double click each line as opposed to editing it as text, and you'll see the dropdowns):
+
+```
+$(SRCROOT)/../node_modules/react-native-hockeyapp/RNHockeyApp
 ```
 
 ## Android (React Native >= 0.29)
