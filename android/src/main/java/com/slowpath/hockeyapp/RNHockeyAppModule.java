@@ -2,6 +2,7 @@ package com.slowpath.hockeyapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -12,22 +13,27 @@ import net.hockeyapp.android.CrashManagerListener;
 import net.hockeyapp.android.FeedbackManager;
 import net.hockeyapp.android.LoginManager;
 import net.hockeyapp.android.UpdateManager;
+import net.hockeyapp.android.metrics.MetricsManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
-import java.io.FileOutputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.Runnable;
 import java.lang.RuntimeException;
 import java.lang.Thread;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Iterator;
+import java.util.Map;
 
 public class RNHockeyAppModule extends ReactContextBaseJavaModule {
   public static final int RC_HOCKEYAPP_IN = 9200;
+  private static final int DEFAULT_BUFFER_SIZE = 8192;
 
   // This wants to be an enum, but cannot translate that to match the JS API properly
   public static final int AUTHENTICATION_TYPE_ANONYMOUS = 0;
@@ -36,7 +42,6 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
   public static final int AUTHENTICATION_TYPE_DEVICE_UUID = 3;
   public static final int AUTHENTICATION_TYPE_WEB = 4; // Included for consistency, but not supported on Android currently
 
-  private Activity _activity;
   private static ReactApplicationContext _context;
   public static boolean _initialized = false;
   public static String _token = null;
@@ -46,10 +51,9 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
   public static String _appSecret = null;
   public static RNHockeyCrashManagerListener _crashManagerListener = null;
 
-  public RNHockeyAppModule(ReactApplicationContext _reactContext, Activity activity) {
+  public RNHockeyAppModule(ReactApplicationContext _reactContext) {
     super(_reactContext);
     _context = _reactContext;
-    _activity = activity;
   }
 
   @Override
@@ -72,10 +76,18 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void start() {
-    if (_initialized) {
-      FeedbackManager.register(_activity, _token, null);
 
-      CrashManager.register(_activity, _token, _crashManagerListener);
+    Activity currentActivity = getCurrentActivity();
+    if (currentActivity == null) {
+        // The currentActivity can be null if it is backgrounded / destroyed, so we simply
+        // no-op to prevent any null pointer exceptions.
+        return;
+    }
+    if (_initialized) {
+      FeedbackManager.register(currentActivity, _token, null);
+
+      CrashManager.register(currentActivity, _token, _crashManagerListener);
+      MetricsManager.register(currentActivity.getApplication(), _token);
 
       int authenticationMode;
       switch (_authType) {
@@ -101,8 +113,8 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
         }
       }
 
-      LoginManager.register(_context, _token, _appSecret, authenticationMode, _activity.getClass());
-      LoginManager.verifyLogin(_activity, _activity.getIntent());
+      LoginManager.register(_context, _token, _appSecret, authenticationMode, currentActivity.getClass());
+      LoginManager.verifyLogin(currentActivity, currentActivity.getIntent());
 
       _crashManagerListener.deleteMetadataFileIfExists();
     }
@@ -110,27 +122,39 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void checkForUpdate() {
+    Activity currentActivity = getCurrentActivity();
+    if (currentActivity == null) {
+        // The currentActivity can be null if it is backgrounded / destroyed, so we simply
+        // no-op to prevent any null pointer exceptions.
+        return;
+    }
     if (_initialized) {
-      UpdateManager.register(_activity, _token);
+      UpdateManager.register(currentActivity, _token);
     }
   }
 
   @ReactMethod
   public void feedback() {
+    Activity currentActivity = getCurrentActivity();
+    if (currentActivity == null) {
+        // The currentActivity can be null if it is backgrounded / destroyed, so we simply
+        // no-op to prevent any null pointer exceptions.
+        return;
+    }
     if (_initialized) {
-      _activity.runOnUiThread(new Runnable() {
-        private Activity _activity;
+      currentActivity.runOnUiThread(new Runnable() {
+        private Activity currentActivity;
 
         public Runnable init(Activity activity) {
-          _activity = activity;
+          currentActivity = activity;
           return (this);
         }
 
         @Override
         public void run() {
-          FeedbackManager.showFeedbackActivity(_activity);
+          FeedbackManager.showFeedbackActivity(currentActivity);
         }
-      }.init(_activity));
+      }.init(currentActivity));
     }
   }
 
@@ -153,6 +177,28 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
       }).start();
     }
   }
+
+   @ReactMethod
+  public void trackEvent(String eventName) {
+    if(_initialized)
+    {
+      log(eventName);
+       MetricsManager.trackEvent(eventName);
+    }
+  }
+
+   @ReactMethod
+  public void trackEventWithOptionsAndMeasurements(String eventName, Map<String,String> properties, Map<String,Double> measurements) {
+    if(_initialized)
+    {
+      log(eventName);
+       MetricsManager.trackEvent(eventName, properties, measurements);
+    }
+  }
+
+  private void log(String message) {
+     Log.d("ReactNativeJS", "react-native-hockeyapp: " + message);
+   }
 
   private static class RNHockeyCrashManagerListener extends CrashManagerListener {
     private boolean autoSend = false;
@@ -189,6 +235,7 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
     }
 
     public void addMetadata(String metadata) {
+      OutputStream stream = null;
       try {
         JSONObject newMetadata = new JSONObject(metadata);
         JSONObject allMetadata = this.getExistingMetadata();
@@ -204,12 +251,18 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
           allMetadata.put(key, newMetadata.get(key));
         }
 
-        FileOutputStream stream = this.context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
+        stream = this.context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
+        stream = new BufferedOutputStream(stream, DEFAULT_BUFFER_SIZE);
 
         stream.write(allMetadata.toString().getBytes("UTF8"));
-        stream.close();
-      } catch (IOException e) {
-      } catch (JSONException e) {
+
+      } catch (IOException|JSONException e) {
+      } finally {
+        try {
+          stream.close();
+        } catch (IOException e) {
+          // NO OP
+        }
       }
     }
 
@@ -218,19 +271,29 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
     }
 
     private JSONObject getExistingMetadata() {
+      InputStream stream = null;
       try {
-        BufferedInputStream stream = new BufferedInputStream(this.context.openFileInput(FILE_NAME));
+        stream = new BufferedInputStream(this.context.openFileInput(FILE_NAME), DEFAULT_BUFFER_SIZE);
+        StringBuilder builder = new StringBuilder(DEFAULT_BUFFER_SIZE);
 
-        int bytesRequired = stream.available();
-        byte[] buffer = new byte[bytesRequired];
+        byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+        int bytesRead;
+        do {
+          bytesRead = stream.read(buffer);
+          if (bytesRead > 0) {
+            builder.append(new String(buffer, 0, bytesRead, "UTF8"));
+          }
+        } while(bytesRead > 0);
 
-        stream.read(buffer);
-        stream.close();
-        String json = new String(buffer, "UTF8");
-
-        return new JSONObject(json);
-      } catch (IOException e) {
-      } catch (JSONException e) {
+        return new JSONObject(builder.toString());
+      } catch (IOException|JSONException e) {
+        if (stream != null) {
+          try {
+            stream.close();
+          } catch (IOException er) {
+            // NO OP
+          }
+        }
       }
 
       return null;

@@ -1,5 +1,9 @@
 #import "RNHockeyApp.h"
+#if __has_include(<React/RCTEventDispatcher.h>)
+#import <React/RCTEventDispatcher.h>
+#else
 #import "RCTEventDispatcher.h"
+#endif
 
 static BOOL initialized = NO;
 static BOOL autoSend = YES;
@@ -112,6 +116,18 @@ RCT_EXPORT_METHOD(generateTestCrash)
 {
     if (initialized == YES) {
         [[BITHockeyManager sharedHockeyManager].crashManager generateTestCrash];
+    }
+}
+
+RCT_EXPORT_METHOD(trackEvent:(NSString *)eventName)
+{
+    if (initialized == YES) {
+        if ([eventName length] > 0) {
+            BITMetricsManager *metricsManager = [[BITHockeyManager sharedHockeyManager] metricsManager];
+            [metricsManager trackEventWithName:eventName];
+        } else {
+            NSLog(@"react-native-hockeyapp: An event name must be provided.");
+        }
     }
 }
 

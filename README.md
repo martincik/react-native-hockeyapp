@@ -1,3 +1,5 @@
+:exclamation: *While I do not have the time to actively maintain RN-hockeyapp anymore, I am open to new maintainers taking the lead. If you would be interested, contact me at ladislav (at) benloop (dot) com.* :exclamation:
+
 # react-native-hockeyapp
 [HockeyApp](http://hockeyapp.com) integration for React Native.
 
@@ -5,7 +7,7 @@
 
 - iOS 7+
 - Android
-- React Native >0.14
+- React Native >0.17
 - CocoaPods
 
 ## Installation
@@ -29,15 +31,18 @@ pod "HockeySDK"
 
 Run `pod install`
 
-### Add Pods.xcodeproj to your project
-Drag-and-drop ./ios/Pods/Pods.xcodeproj into your Project > Libraries.
+Open `YourProject.xcworkspace`
 
-### Add the RNHockeyApp/ folder to your project
-Drag-and-drop files from ./node_modules/react-native-hockeyapp/RNHockeyApp into your Project > Libraries.
+### Add the RNHockeyApp library to your project
+
+* Drag-and-drop `RNHockeyApp.xcodeproj` from `./node_modules/react-native-hockeyapp/RNHockeyApp` into your `Project > Libraries`.
+* Drag-and-drop `libRNHockeyApp.a` from `Libraries/RNHockeyApp/Products` into `Linked Frameworks and Libraries`
 
 ### Changes to AppDelegate.m
 If you wish to use Device UUID authentication or Web authentication, the following must be added to `ios/AppDelegate.m`
 ```objective-c
+#import "RNHockeyApp.h"
+
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
   if( [[BITHockeyManager sharedHockeyManager].authenticator handleOpenURL:url
                                                         sourceApplication:sourceApplication
@@ -50,8 +55,13 @@ If you wish to use Device UUID authentication or Web authentication, the followi
   return NO;
 }
 ```
+You also need to add `RNHockeyApp` to `Build Settings > Search Paths > Header Search Paths` as a **`recursive`** search path, adding the following to both `Debug` and `Release` and ensuring `recursive` is selected (double click each line as opposed to editing it as text, and you'll see the dropdowns):
 
-## Android
+```
+$(SRCROOT)/../node_modules/react-native-hockeyapp/RNHockeyApp
+```
+
+## Android (React Native >= 0.29)
 
 ### Google project configuration
 
@@ -73,7 +83,7 @@ repositories {
 }
 dependencies {
     classpath 'com.android.tools.build:gradle:1.3.1'
-    classpath 'net.hockeyapp.android:HockeySDK:3.7.0' // <--- add this
+    classpath 'net.hockeyapp.android:HockeySDK:4.1.0' // <--- add this
 }
 ```
 
@@ -85,7 +95,75 @@ apply plugin: "com.android.application"
 dependencies {
     compile fileTree(dir: "libs", include: ["*.jar"])
     compile "com.android.support:appcompat-v7:23.0.1"
-    compile "com.facebook.react:react-native:0.19.+"
+    compile "com.facebook.react:react-native:0.29.+"
+    compile project(":react-native-hockeyapp") // <--- add this
+}
+```
+
+* Manifest file
+```xml
+<application ..>
+    <activity android:name="net.hockeyapp.android.UpdateActivity" />
+    <activity android:name="net.hockeyapp.android.FeedbackActivity" />
+</application>
+```
+
+* Register Module (in MainApplication.java)
+
+```java
+import com.slowpath.hockeyapp.RNHockeyAppModule; // <--- import
+import com.slowpath.hockeyapp.RNHockeyAppPackage;  // <--- import
+
+public class MainApplication extends Application implements ReactApplication {
+  ......
+
+  @Override
+  protected List<ReactPackage> getPackages() {
+    return Arrays.<ReactPackage>asList(
+      new RNHockeyAppPackage(MainApplication.this), // <------ add this line to yout MainApplication class
+      new MainReactPackage());
+  }
+
+  ......
+
+}
+```
+
+## Android (React Native 0.17 - 0.28) - Only react-native-hockeyapp:0.4.2 or less
+
+### Google project configuration
+
+* In `android/setting.gradle`
+
+```gradle
+...
+include ':react-native-hockeyapp', ':app'
+project(':react-native-hockeyapp').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-hockeyapp/android')
+```
+
+* In `android/build.gradle`
+
+```gradle
+...
+repositories {
+    jcenter()
+    mavenCentral()
+}
+dependencies {
+    classpath 'com.android.tools.build:gradle:1.3.1'
+    classpath 'net.hockeyapp.android:HockeySDK:4.1.2' // <--- add this
+}
+```
+
+* In `android/app/build.gradle`
+
+```gradle
+apply plugin: "com.android.application"
+...
+dependencies {
+    compile fileTree(dir: "libs", include: ["*.jar"])
+    compile "com.android.support:appcompat-v7:23.0.1"
+    compile "com.facebook.react:react-native:0.17.+"
     compile project(":react-native-hockeyapp") // <--- add this
 }
 ```
@@ -132,7 +210,7 @@ componentWillMount() {
 
 componentDidMount() {
     HockeyApp.start();
-    HockeyApp.checkForUpdate();
+    HockeyApp.checkForUpdate(); // optional
 }
 ```
 

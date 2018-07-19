@@ -18,6 +18,6 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile "com.android.support:appcompat-v7:23.0.1"
-    compile 'com.facebook.react:react-native:0.14.+'
-    compile 'net.hockeyapp.android:HockeySDK:4.0.1'
+    compile 'com.facebook.react:react-native:0.17.+'
+    compile 'net.hockeyapp.android:HockeySDK:4.1.2'
 }
