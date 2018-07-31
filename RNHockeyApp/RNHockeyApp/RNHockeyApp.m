@@ -116,50 +116,8 @@ RCT_EXPORT_METHOD(feedback)
         NSLog(@"Not initialized! \n");
     }
 }
-
-RCT_EXPORT_METHOD(setFeedbackUserName:(NSString *)userName)
-{
-    if (initialized == NO) {
-        NSLog(@"Not initialized! \n");
-        return;
-    }
-    [BITHockeyManager sharedHockeyManager].feedbackManager.userName = userName;
-}
-
-RCT_EXPORT_METHOD(setFeedbackUserEmail:(NSString *)email)
-{
-    if (initialized == NO) {
-        NSLog(@"Not initialized! \n");
-        return;
-    }
-    [BITHockeyManager sharedHockeyManager].feedbackManager.userEmail = email;
-}
-
-RCT_EXPORT_METHOD(setFeedbackUserId:(NSString *)userId)
-{
-    if (initialized == NO) {
-        NSLog(@"Not initialized! \n");
-        return;
-    }
-    [BITHockeyManager sharedHockeyManager].feedbackManager.userId = userId;
-}
 #else
 RCT_EXPORT_METHOD(feedback)
-{
-    NSLog(@"Feedback not included in HockeyApp SDK installation! \n");
-}
-
-RCT_EXPORT_METHOD(setFeedbackUserName:(NSString *)userName)
-{
-    NSLog(@"Feedback not included in HockeyApp SDK installation! \n");
-}
-
-RCT_EXPORT_METHOD(setFeedbackUserEmail:(NSString *)email)
-{
-    NSLog(@"Feedback not included in HockeyApp SDK installation! \n");
-}
-
-RCT_EXPORT_METHOD(setFeedbackUserId:(NSString *)userId)
 {
     NSLog(@"Feedback not included in HockeyApp SDK installation! \n");
 }
@@ -205,6 +163,33 @@ RCT_EXPORT_METHOD(trackEventWithOptionsAndMeasurements:(NSString *)eventName Opt
   }
 }
 
+RCT_EXPORT_METHOD(setUserName:(NSString *)userName)
+{
+    if (initialized == NO) {
+        NSLog(@"Not initialized! \n");
+        return;
+    }
+    [BITHockeyManager sharedHockeyManager].userName = userName;
+}
+
+RCT_EXPORT_METHOD(setUserEmail:(NSString *)email)
+{
+    if (initialized == NO) {
+        NSLog(@"Not initialized! \n");
+        return;
+    }
+    [BITHockeyManager sharedHockeyManager].userEmail = email;
+}
+
+RCT_EXPORT_METHOD(setUserId:(NSString *)userId)
+{
+    if (initialized == NO) {
+        NSLog(@"Not initialized! \n");
+        return;
+    }
+    [BITHockeyManager sharedHockeyManager].userID = userId;
+}
+
 + (void)deleteMetadataFileIfExists
 {
     NSString *filePath = [RNHockeyApp getMetadataFilePath];
@@ -243,5 +228,6 @@ RCT_EXPORT_METHOD(trackEventWithOptionsAndMeasurements:(NSString *)eventName Opt
 
     return [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:nil];
 }
+
 
 @end

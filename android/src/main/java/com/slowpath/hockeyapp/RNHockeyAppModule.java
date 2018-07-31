@@ -134,7 +134,7 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setFeedbackUserName(String name) {
+  public void setUserName(String name) {
     if (!_initialized) {
       return;
     }
@@ -142,7 +142,7 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setFeedbackUserEmail(String userEmail) {
+  public void setUserEmail(String userEmail) {
     if (!_initialized) {
       return;
     }
@@ -150,7 +150,7 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setFeedbackUserId(String id) {
+  public void setUserId(String id) {
     if (!_initialized) {
       return;
     }

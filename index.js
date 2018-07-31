@@ -41,17 +41,17 @@ export const HockeyApp = {
         checkInstalled();
         RNHockeyApp.feedback();
     },
-    setFeedbackUserName(userName) {
+    setUserName(userName) {
         checkInstalled();
-        RNHockeyApp.setFeedbackUserName(userName);
+        RNHockeyApp.setUserName(userName);
     },
-    setFeedbackUserEmail(userEmail) {
+    setUserEmail(userEmail) {
         checkInstalled();
-        RNHockeyApp.setFeedbackUserEmail(userEmail);
+        RNHockeyApp.setUserEmail(userEmail);
     },
-    setFeedbackUserId(userId) {
+    setUserId(userId) {
         checkInstalled();
-        RNHockeyApp.setFeedbackUserId(userId);
+        RNHockeyApp.setUserId(userId);
     },
     addMetadata(metadata) {
         checkInstalled();

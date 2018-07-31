@@ -63,7 +63,7 @@ export class HockeyApp {
     */
     static trackEvent(eventName: string): void;
 
-    static setFeedbackUserName(userName: string): void;
-    static setFeedbackUserEmail(userEmail: string): void;
-    static setFeedbackUserId(userId: string): void;
+    static setUserName(userName: string): void;
+    static setUserEmail(userEmail: string): void;
+    static setUserId(userId: string): void;
 }
