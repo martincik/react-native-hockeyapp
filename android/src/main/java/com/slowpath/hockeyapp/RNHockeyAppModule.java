@@ -146,7 +146,7 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
     if (!_initialized) {
       return;
     }
-    FeedbackManager.setUserName(name);
+    FeedbackManager.setUserEmail(userEmail);
   }
 
   @ReactMethod
