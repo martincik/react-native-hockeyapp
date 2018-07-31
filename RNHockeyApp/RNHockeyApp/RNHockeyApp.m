@@ -16,6 +16,13 @@ static AuthType authType = 0;
 static NSString *token = nil;
 static NSString *appSecret = nil;
 
+@interface BITFeedbackManager ()
+// Allow access to private
+@property (nonatomic, copy) NSString *userName;
+@property (nonatomic, copy) NSString *userEmail;
+@property (nonatomic, copy) NSString *userId;
+@end
+
 @interface RNHockeyApp() <BITHockeyManagerDelegate, BITCrashManagerDelegate>
 @end
 
@@ -99,6 +106,7 @@ RCT_EXPORT_METHOD(addMetadata:(NSData*) metadata)
     }
 }
 
+
 #if HOCKEYSDK_FEATURE_FEEDBACK
 RCT_EXPORT_METHOD(feedback)
 {
@@ -108,8 +116,50 @@ RCT_EXPORT_METHOD(feedback)
         NSLog(@"Not initialized! \n");
     }
 }
+
+RCT_EXPORT_METHOD(setFeedbackUserName:(NSString *)userName)
+{
+    if (initialized == NO) {
+        NSLog(@"Not initialized! \n");
+        return;
+    }
+    [BITHockeyManager sharedHockeyManager].feedbackManager.userName = userName;
+}
+
+RCT_EXPORT_METHOD(setFeedbackUserEmail:(NSString *)email)
+{
+    if (initialized == NO) {
+        NSLog(@"Not initialized! \n");
+        return;
+    }
+    [BITHockeyManager sharedHockeyManager].feedbackManager.userEmail = email;
+}
+
+RCT_EXPORT_METHOD(setFeedbackUserId:(NSString *)userId)
+{
+    if (initialized == NO) {
+        NSLog(@"Not initialized! \n");
+        return;
+    }
+    [BITHockeyManager sharedHockeyManager].feedbackManager.userId = userId;
+}
 #else
 RCT_EXPORT_METHOD(feedback)
+{
+    NSLog(@"Feedback not included in HockeyApp SDK installation! \n");
+}
+
+RCT_EXPORT_METHOD(setFeedbackUserName:(NSString *)userName)
+{
+    NSLog(@"Feedback not included in HockeyApp SDK installation! \n");
+}
+
+RCT_EXPORT_METHOD(setFeedbackUserEmail:(NSString *)email)
+{
+    NSLog(@"Feedback not included in HockeyApp SDK installation! \n");
+}
+
+RCT_EXPORT_METHOD(setFeedbackUserId:(NSString *)userId)
 {
     NSLog(@"Feedback not included in HockeyApp SDK installation! \n");
 }
