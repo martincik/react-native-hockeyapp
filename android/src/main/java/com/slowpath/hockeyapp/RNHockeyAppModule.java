@@ -134,6 +134,30 @@ public class RNHockeyAppModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void setUserName(String name) {
+    if (!_initialized) {
+      return;
+    }
+    FeedbackManager.setUserName(name);
+  }
+
+  @ReactMethod
+  public void setUserEmail(String userEmail) {
+    if (!_initialized) {
+      return;
+    }
+    FeedbackManager.setUserEmail(userEmail);
+  }
+
+  @ReactMethod
+  public void setUserId(String id) {
+    if (!_initialized) {
+      return;
+    }
+    FeedbackManager.setUserId(id);
+  }
+
+  @ReactMethod
   public void feedback() {
     Activity currentActivity = getCurrentActivity();
     if (currentActivity == null) {

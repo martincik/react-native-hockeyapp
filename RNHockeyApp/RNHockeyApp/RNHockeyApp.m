@@ -99,6 +99,7 @@ RCT_EXPORT_METHOD(addMetadata:(NSData*) metadata)
     }
 }
 
+
 #if HOCKEYSDK_FEATURE_FEEDBACK
 RCT_EXPORT_METHOD(feedback)
 {
@@ -155,6 +156,33 @@ RCT_EXPORT_METHOD(trackEventWithOptionsAndMeasurements:(NSString *)eventName Opt
   }
 }
 
+RCT_EXPORT_METHOD(setUserName:(NSString *)userName)
+{
+    if (initialized == NO) {
+        NSLog(@"Not initialized! \n");
+        return;
+    }
+    [BITHockeyManager sharedHockeyManager].userName = userName;
+}
+
+RCT_EXPORT_METHOD(setUserEmail:(NSString *)email)
+{
+    if (initialized == NO) {
+        NSLog(@"Not initialized! \n");
+        return;
+    }
+    [BITHockeyManager sharedHockeyManager].userEmail = email;
+}
+
+RCT_EXPORT_METHOD(setUserId:(NSString *)userId)
+{
+    if (initialized == NO) {
+        NSLog(@"Not initialized! \n");
+        return;
+    }
+    [BITHockeyManager sharedHockeyManager].userID = userId;
+}
+
 + (void)deleteMetadataFileIfExists
 {
     NSString *filePath = [RNHockeyApp getMetadataFilePath];
@@ -193,5 +221,6 @@ RCT_EXPORT_METHOD(trackEventWithOptionsAndMeasurements:(NSString *)eventName Opt
 
     return [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:nil];
 }
+
 
 @end
