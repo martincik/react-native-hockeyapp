@@ -16,13 +16,6 @@ static AuthType authType = 0;
 static NSString *token = nil;
 static NSString *appSecret = nil;
 
-@interface BITFeedbackManager ()
-// Allow access to private
-@property (nonatomic, copy) NSString *userName;
-@property (nonatomic, copy) NSString *userEmail;
-@property (nonatomic, copy) NSString *userId;
-@end
-
 @interface RNHockeyApp() <BITHockeyManagerDelegate, BITCrashManagerDelegate>
 @end
 
