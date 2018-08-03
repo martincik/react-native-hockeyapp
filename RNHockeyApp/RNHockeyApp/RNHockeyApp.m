@@ -42,34 +42,15 @@ RCT_EXPORT_METHOD(start) {
             [[BITHockeyManager sharedHockeyManager] configureWithIdentifier:token
                                                                    delegate:self];
             if (autoSend == YES) {
+#if HOCKEYSDK_FEATURE_CRASH_REPORTER
                 [[BITHockeyManager sharedHockeyManager].crashManager setCrashManagerStatus:BITCrashManagerStatusAutoSend];
+#else
+                NSLog(@"CrashManager not included in HockeyApp SDK installation! \n");
+#endif
             }
-            switch (authType) {
-                case EmailSecret:
-                    NSLog(@"react-native-hockeyapp: Email + Secret Auth set");
-                    [[BITHockeyManager sharedHockeyManager].authenticator setAuthenticationSecret:appSecret];
-                    [[BITHockeyManager sharedHockeyManager].authenticator setIdentificationType:BITAuthenticatorIdentificationTypeHockeyAppEmail];
-                    break;
-                case EmailPassword:
-                    NSLog(@"react-native-hockeyapp: Email + Password Auth set");
-                    [[BITHockeyManager sharedHockeyManager].authenticator setIdentificationType:BITAuthenticatorIdentificationTypeHockeyAppUser];
-                    break;
-                case DeviceUUID:
-                    NSLog(@"react-native-hockeyapp: Device UUID Auth set");
-                    [[BITHockeyManager sharedHockeyManager].authenticator setIdentificationType:BITAuthenticatorIdentificationTypeDevice];
-                    break;
-                case WebAuth:
-                    NSLog(@"react-native-hockeyapp: Web Auth set");
-                    [[BITHockeyManager sharedHockeyManager].authenticator setIdentificationType:BITAuthenticatorIdentificationTypeWebAuth];
-                    break;
-                case Anonymous:
-                default:
-                    NSLog(@"react-native-hockeyapp: Anonymous Auth set");
-                    [[BITHockeyManager sharedHockeyManager].authenticator setIdentificationType:BITAuthenticatorIdentificationTypeAnonymous];
-                    break;
-            }
+
+            [RNHockeyApp setupAuthenticator];
             [[BITHockeyManager sharedHockeyManager] startManager];
-            [[BITHockeyManager sharedHockeyManager].authenticator authenticateInstallation];
 
             [RNHockeyApp deleteMetadataFileIfExists];
         });
@@ -99,40 +80,46 @@ RCT_EXPORT_METHOD(addMetadata:(NSData*) metadata)
     }
 }
 
-#if HOCKEYSDK_FEATURE_FEEDBACK
 RCT_EXPORT_METHOD(feedback)
 {
+#if HOCKEYSDK_FEATURE_FEEDBACK
     if (initialized == YES) {
         [[BITHockeyManager sharedHockeyManager].feedbackManager showFeedbackListView];
     } else {
         NSLog(@"Not initialized! \n");
     }
-}
 #else
-RCT_EXPORT_METHOD(feedback)
-{
     NSLog(@"Feedback not included in HockeyApp SDK installation! \n");
-}
 #endif
+}
 
 RCT_EXPORT_METHOD(checkForUpdate)
 {
+#if HOCKEYSDK_FEATURE_UPDATES
     if (initialized == YES) {
         [[BITHockeyManager sharedHockeyManager].updateManager checkForUpdate];
     } else {
         NSLog(@"Not initialized! \n");
     }
+#else
+    NSLog(@"Updates not included in HockeyApp SDK installation! \n");
+#endif
 }
 
 RCT_EXPORT_METHOD(generateTestCrash)
 {
+#if HOCKEYSDK_FEATURE_CRASH_REPORTER
     if (initialized == YES) {
         [[BITHockeyManager sharedHockeyManager].crashManager generateTestCrash];
     }
+#else
+    NSLog(@"CrashManager not included in HockeyApp SDK installation! \n");
+#endif
 }
 
 RCT_EXPORT_METHOD(trackEvent:(NSString *)eventName)
 {
+#if HOCKEYSDK_FEATURE_METRICS
     if (initialized == YES) {
         if ([eventName length] > 0) {
             BITMetricsManager *metricsManager = [[BITHockeyManager sharedHockeyManager] metricsManager];
@@ -141,10 +128,14 @@ RCT_EXPORT_METHOD(trackEvent:(NSString *)eventName)
             NSLog(@"react-native-hockeyapp: An event name must be provided.");
         }
     }
+#else
+    NSLog(@"Metrics not included in HockeyApp SDK installation! \n");
+#endif
 }
 
 RCT_EXPORT_METHOD(trackEventWithOptionsAndMeasurements:(NSString *)eventName Options:(NSDictionary *)options Measurements:(NSDictionary *)measurements)
 {
+#if HOCKEYSDK_FEATURE_METRICS
   if (initialized == YES) {
     if ([eventName length] > 0) {
       BITMetricsManager *metricsManager = [[BITHockeyManager sharedHockeyManager] metricsManager];
@@ -153,6 +144,42 @@ RCT_EXPORT_METHOD(trackEventWithOptionsAndMeasurements:(NSString *)eventName Opt
       NSLog(@"react-native-hockeyapp: An event name must be provided.");
     }
   }
+#else
+    NSLog(@"Metrics not included in HockeyApp SDK installation! \n");
+#endif
+}
+
++ (void)setupAuthenticator
+{
+#if HOCKEYSDK_FEATURE_AUTHENTICATOR
+    switch (authType) {
+        case EmailSecret:
+            NSLog(@"react-native-hockeyapp: Email + Secret Auth set");
+            [[BITHockeyManager sharedHockeyManager].authenticator setAuthenticationSecret:appSecret];
+            [[BITHockeyManager sharedHockeyManager].authenticator setIdentificationType:BITAuthenticatorIdentificationTypeHockeyAppEmail];
+            break;
+        case EmailPassword:
+            NSLog(@"react-native-hockeyapp: Email + Password Auth set");
+            [[BITHockeyManager sharedHockeyManager].authenticator setIdentificationType:BITAuthenticatorIdentificationTypeHockeyAppUser];
+            break;
+        case DeviceUUID:
+            NSLog(@"react-native-hockeyapp: Device UUID Auth set");
+            [[BITHockeyManager sharedHockeyManager].authenticator setIdentificationType:BITAuthenticatorIdentificationTypeDevice];
+            break;
+        case WebAuth:
+            NSLog(@"react-native-hockeyapp: Web Auth set");
+            [[BITHockeyManager sharedHockeyManager].authenticator setIdentificationType:BITAuthenticatorIdentificationTypeWebAuth];
+            break;
+        case Anonymous:
+        default:
+            NSLog(@"react-native-hockeyapp: Anonymous Auth set");
+            [[BITHockeyManager sharedHockeyManager].authenticator setIdentificationType:BITAuthenticatorIdentificationTypeAnonymous];
+            break;
+    }
+    [[BITHockeyManager sharedHockeyManager].authenticator authenticateInstallation];
+#else
+    NSLog(@"Authenticator not included in HockeyApp SDK installation! \n");
+#endif
 }
 
 + (void)deleteMetadataFileIfExists
