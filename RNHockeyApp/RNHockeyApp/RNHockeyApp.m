@@ -16,8 +16,13 @@ static AuthType authType = 0;
 static NSString *token = nil;
 static NSString *appSecret = nil;
 
+#if HOCKEYSDK_FEATURE_CRASH_REPORTER
 @interface RNHockeyApp() <BITHockeyManagerDelegate, BITCrashManagerDelegate>
 @end
+#else
+@interface RNHockeyApp() <BITHockeyManagerDelegate>
+@end
+#endif
 
 @implementation RNHockeyApp
 
@@ -214,11 +219,12 @@ RCT_EXPORT_METHOD(trackEventWithOptionsAndMeasurements:(NSString *)eventName Opt
     return [directoryPath stringByAppendingPathComponent:@"HockeyAppCrashMetadata.json"];
 }
 
+#if HOCKEYSDK_FEATURE_CRASH_REPORTER
 - (NSString *)applicationLogForCrashManager:(BITCrashManager *)crashManager
 {
     NSString *filePath = [RNHockeyApp getMetadataFilePath];
 
     return [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:nil];
 }
-
+#endif
 @end
